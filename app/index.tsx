@@ -1,15 +1,13 @@
-import { Text, View } from "react-native";
+import { router } from "expo-router";
+import React, { useEffect } from "react";
+import { View } from "react-native";
 
 export default function Index() {
-  return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Text>Edit app/index.tsx to edit this screen.</Text>
-    </View>
-  );
+  useEffect(() => {
+    // Check if user is logged in
+    // For now, always redirect to login
+    router.replace("/dashboard");
+  }, []);
+
+  return <View style={{ flex: 1, backgroundColor: "#f8f9fa" }} />;
 }
