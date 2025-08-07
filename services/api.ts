@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Replace with your actual IP address and port
-const BASE_URL = 'http://YOUR_LOCAL_IP:8000/api';
+const BASE_URL = 'http://192.168.1.76:8000/api';
 
 interface ApiResponse<T = any> {
   data?: T;
@@ -21,12 +21,14 @@ class ApiService {
   private async handleResponse(response: Response): Promise<ApiResponse> {
     try {
       const data = await response.json();
-      
+
       if (response.ok) {
         return { data, success: true };
       } else {
+        // Extract meaningful error messages
+        const errorMessage = extractFirstErrorMessage(data);
         return { 
-          error: data.message || data.detail || 'Something went wrong',
+          error: errorMessage || 'Something went wrong',
           success: false 
         };
       }
@@ -39,18 +41,21 @@ class ApiService {
   }
 
   async signup(userData: {
+    username: string;
     first_name: string;
     last_name: string;
     email: string;
     password: string;
   }): Promise<ApiResponse> {
     try {
-      const response = await fetch(`${BASE_URL}/auth/signup/`, {
+      const response = await fetch(`${BASE_URL}/register-business-partner/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(userData),
+        body: JSON.stringify({
+          "user":userData
+        }),
       });
 
       return await this.handleResponse(response);
@@ -201,3 +206,22 @@ class ApiService {
 }
 
 export default new ApiService();
+
+
+// Utility to get first error from nested structure
+function extractFirstErrorMessage(errorObj: any): string | null {
+  if (typeof errorObj === 'string') return errorObj;
+  if (Array.isArray(errorObj)) return errorObj[0];
+
+  for (const key in errorObj) {
+    const val = errorObj[key];
+    if (typeof val === 'string') return val;
+    if (Array.isArray(val)) return val[0];
+    if (typeof val === 'object') {
+      const nested = extractFirstErrorMessage(val);
+      if (nested) return nested;
+    }
+  }
+
+  return null;
+}

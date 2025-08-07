@@ -2,7 +2,7 @@ import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import apiService from "./services/api";
+import apiService from "../services/api";
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);

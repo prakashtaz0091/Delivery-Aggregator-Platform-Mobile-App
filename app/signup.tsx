@@ -12,6 +12,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import apiService from "../services/api";
 
 export default function SignUp() {
   const [formData, setFormData] = useState({
@@ -20,6 +21,7 @@ export default function SignUp() {
     email: "",
     password: "",
     confirmPassword: "",
+    username: "",
   });
   const [isLoading, setIsLoading] = useState(false);
 
@@ -31,9 +33,11 @@ export default function SignUp() {
   };
 
   const validateForm = () => {
-    const { firstName, lastName, email, password, confirmPassword } = formData;
+    const { firstName, lastName, username, email, password, confirmPassword } =
+      formData;
 
     if (
+      !username.trim() ||
       !firstName.trim() ||
       !lastName.trim() ||
       !email.trim() ||
@@ -69,41 +73,20 @@ export default function SignUp() {
     setIsLoading(true);
 
     try {
-      const response = await fetch(
-        "http://YOUR_LOCAL_IP:8000/api/auth/signup/",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            first_name: formData.firstName,
-            last_name: formData.lastName,
-            email: formData.email,
-            password: formData.password,
-          }),
-        }
-      );
-
-      const data = await response.json();
-
-      if (response.ok) {
-        Alert.alert("Success", "Account created successfully! Please log in.", [
-          {
-            text: "OK",
-            onPress: () => router.replace("/login"),
-          },
-        ]);
+      const response = await apiService.signup({
+        username: formData.username,
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        email: formData.email,
+        password: formData.password,
+      });
+      if (response.success) {
+        router.replace("/login");
       } else {
-        // Handle validation errors from backend
-        const errorMessage =
-          data.message ||
-          Object.values(data).flat().join("\n") ||
-          "Failed to create account";
-        Alert.alert("Error", errorMessage);
+        Alert.alert("Error", response.error);
       }
     } catch (error) {
-      console.error("Signup error:", error);
+      console.error(error);
       Alert.alert("Error", "Network error. Please check your connection.");
     } finally {
       setIsLoading(false);
@@ -155,6 +138,18 @@ export default function SignUp() {
                     autoCorrect={false}
                   />
                 </View>
+              </View>
+
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>Username</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="john_doe@123"
+                  value={formData.username}
+                  onChangeText={(value) => handleInputChange("username", value)}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                />
               </View>
 
               <View style={styles.inputGroup}>

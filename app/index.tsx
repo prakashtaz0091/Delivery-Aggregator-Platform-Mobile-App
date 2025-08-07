@@ -1,13 +1,26 @@
 import { router } from "expo-router";
 import React, { useEffect } from "react";
-import { View } from "react-native";
+import { ActivityIndicator, View } from "react-native";
+import apiService from "../services/api";
 
 export default function Index() {
   useEffect(() => {
-    // Check if user is logged in
-    // For now, always redirect to login
-    router.replace("/dashboard");
+    checkAuthStatus();
   }, []);
 
-  return <View style={{ flex: 1, backgroundColor: "#f8f9fa" }} />;
+  const checkAuthStatus = async () => {
+    const isAuthenticated = await apiService.isAuthenticated();
+
+    if (isAuthenticated) {
+      router.replace("/dashboard");
+    } else {
+      router.replace("/login");
+    }
+  };
+
+  return (
+    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <ActivityIndicator size="large" color="#3b82f6" />
+    </View>
+  );
 }
