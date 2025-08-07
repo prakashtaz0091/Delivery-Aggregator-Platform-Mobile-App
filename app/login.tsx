@@ -1,4 +1,3 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -12,72 +11,42 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import api_service from "../services/api";
 
 export default function Login() {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async () => {
-    if (!email.trim() || !password) {
+    if (!username.trim() || !password) {
       Alert.alert("Error", "Please fill in all fields");
-      return;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      Alert.alert("Error", "Please enter a valid email address");
       return;
     }
 
     setIsLoading(true);
 
     try {
-      const response = await fetch(
-        "http://YOUR_LOCAL_IP:8000/api/auth/login/",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: email.trim(),
-            password: password,
-          }),
-        }
-      );
+      const result = await api_service.login({
+        username: username.trim(),
+        password: password,
+      });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        // Store tokens securely
-        await AsyncStorage.setItem("access_token", data.access);
-        await AsyncStorage.setItem("refresh_token", data.refresh);
-
-        // Store user info if provided
-        if (data.user) {
-          await AsyncStorage.setItem("user_data", JSON.stringify(data.user));
-        }
-
+      if (result.success) {
         Alert.alert("Success", "Logged in successfully!", [
           {
             text: "OK",
-            onPress: () => router.replace("/dashboard"), // Change to your main app screen
+            onPress: () => router.replace("/dashboard"),
           },
         ]);
       } else {
-        const errorMessage =
-          data.message ||
-          data.detail ||
-          Object.values(data).flat().join("\n") ||
-          "Invalid credentials";
-        Alert.alert("Error", errorMessage);
+        Alert.alert("Error", result.error || "Invalid credentials");
       }
     } catch (error) {
       console.error("Login error:", error);
       Alert.alert(
         "Error",
-        "Network error. Please check your connection and try again."
+        "Unexpected error. Please check your connection and try again."
       );
     } finally {
       setIsLoading(false);
@@ -98,13 +67,12 @@ export default function Login() {
 
           <View style={styles.form}>
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Email</Text>
+              <Text style={styles.label}>Username</Text>
               <TextInput
                 style={styles.input}
-                placeholder="Enter your email"
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
+                placeholder="Enter your username"
+                value={username}
+                onChangeText={setUsername}
                 autoCapitalize="none"
                 autoCorrect={false}
                 editable={!isLoading}

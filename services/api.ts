@@ -68,11 +68,11 @@ class ApiService {
   }
 
   async login(credentials: {
-    email: string;
+    username: string;
     password: string;
   }): Promise<ApiResponse> {
     try {
-      const response = await fetch(`${BASE_URL}/auth/login/`, {
+      const response = await fetch(`${BASE_URL}/token/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
