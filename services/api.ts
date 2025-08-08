@@ -80,8 +80,7 @@ class ApiService {
         body: JSON.stringify(credentials),
       });
 
-      const result = await this.handleResponse(response);
-      
+      const result = await this.handleResponse(response);        
       if (result.success && result.data) {
         // Store tokens
         if (result.data.access) {

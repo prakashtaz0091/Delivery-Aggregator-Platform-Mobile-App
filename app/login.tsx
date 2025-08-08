@@ -33,12 +33,7 @@ export default function Login() {
       });
 
       if (result.success) {
-        Alert.alert("Success", "Logged in successfully!", [
-          {
-            text: "OK",
-            onPress: () => router.replace("/dashboard"),
-          },
-        ]);
+        router.replace("/(tabs)/dashboard");
       } else {
         Alert.alert("Error", result.error || "Invalid credentials");
       }

@@ -2,9 +2,9 @@ import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import apiService from "../services/api";
+import apiService from "../../services/api";
 
-export default function Dashboard() {
+export default function Profile() {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -35,43 +35,40 @@ export default function Dashboard() {
     ]);
   };
 
+  const handleUpdateAddress = () => {
+    Alert.alert("Update Address", "This feature will be implemented soon!");
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Dashboard</Text>
-          <Text style={styles.welcome}>
-            Welcome back{user ? `, ${user.first_name}` : ""}!
-          </Text>
-        </View>
-
-        <View style={styles.userInfo}>
-          {user && (
-            <View style={styles.infoCard}>
-              <Text style={styles.infoLabel}>Name</Text>
-              <Text style={styles.infoValue}>
+        {user && (
+          <View style={styles.profileCard}>
+            <View style={styles.profileInfo}>
+              <Text style={styles.name}>
                 {user.first_name} {user.last_name}
               </Text>
-
-              <Text style={styles.infoLabel}>Email</Text>
-              <Text style={styles.infoValue}>{user.email}</Text>
+              <Text style={styles.email}>{user.email}</Text>
             </View>
-          )}
-        </View>
+
+            <View style={styles.infoSection}>
+              <Text style={styles.sectionTitle}>Address Information</Text>
+              <View style={styles.addressContainer}>
+                <Text style={styles.addressText}>
+                  {user.address || "Address not set"}
+                </Text>
+                <TouchableOpacity
+                  style={styles.updateButton}
+                  onPress={handleUpdateAddress}
+                >
+                  <Text style={styles.updateButtonText}>Update</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        )}
 
         <View style={styles.actions}>
-          <TouchableOpacity
-            style={styles.primaryButton}
-            onPress={() =>
-              Alert.alert(
-                "Info",
-                "This is where your main app content would go!"
-              )
-            }
-          >
-            <Text style={styles.primaryButtonText}>Main Feature</Text>
-          </TouchableOpacity>
-
           <TouchableOpacity
             style={styles.logoutButton}
             onPress={handleLogout}
@@ -97,54 +94,52 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingTop: 20,
   },
-  header: {
-    alignItems: "center",
-    marginBottom: 40,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: "bold",
-    color: "#1a1a1a",
-    marginBottom: 8,
-  },
-  welcome: {
-    fontSize: 16,
-    color: "#6b7280",
-  },
-  userInfo: {
-    marginBottom: 40,
-  },
-  infoCard: {
+  profileCard: {
     backgroundColor: "#ffffff",
-    padding: 20,
     borderRadius: 12,
+    padding: 20,
+    marginBottom: 30,
     borderWidth: 1,
     borderColor: "#e5e7eb",
   },
-  infoLabel: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#374151",
-    marginBottom: 4,
-    marginTop: 12,
+  profileInfo: {
+    alignItems: "center",
+    marginBottom: 24,
+    paddingBottom: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: "#e5e7eb",
   },
-  infoValue: {
-    fontSize: 16,
+  name: {
+    fontSize: 24,
+    fontWeight: "bold",
     color: "#1a1a1a",
+    marginBottom: 4,
+  },
+  email: {
+    fontSize: 16,
+    color: "#6b7280",
+  },
+  infoSection: {
+    marginBottom: 20,
+  },
+  addressContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  updateButton: {
+    backgroundColor: "#3b82f6",
+    borderRadius: 8,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+  },
+  updateButtonText: {
+    color: "#ffffff",
+    fontSize: 12,
+    fontWeight: "600",
   },
   actions: {
     gap: 16,
-  },
-  primaryButton: {
-    backgroundColor: "#3b82f6",
-    borderRadius: 12,
-    paddingVertical: 16,
-    alignItems: "center",
-  },
-  primaryButtonText: {
-    color: "#ffffff",
-    fontSize: 16,
-    fontWeight: "600",
   },
   logoutButton: {
     backgroundColor: "#ef4444",
